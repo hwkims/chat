@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메신저</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .chat-container {
+            width: 300px;
+            height: 400px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow-y: auto;
+            background-color: #a0c0d7;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .chat-message {
+            margin-bottom: 10px;
+            padding: 10px;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .chat-message .message-bubble {
+            background-color: #ffeb00;
+            padding: 10px;
+            border-radius: 5px;
+            position: relative;
+        }
+        .chat-message .message-bubble::after {
+            content: "";
+            position: absolute;
+            top: 30%;
+            right: -10px;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 10px solid #ffeb00;
+        }
+        #message-input {
+            width: 250px;
+            height: 30px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+        #send-button {
+            width: 50px;
+            height: 40px;
+            padding-bottom: 10px;
+            border: none;
+            border-radius: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            cursor: pointer;
+        
+        }
+        #send-button:hover {
+            background-color: #3e8e41;
+        }
+        #send-icon {
+    
+            fill: #fff;
+        }
+    </style>
+</head>
+<body>
+   
+    <div class="chat-container" id="chat-container"></div>
+    <input type="text" id="message-input" placeholder="메시지를 입력하세요">
+    <button id="send-button">
+    전송
+    </button>
+
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+
+        // 로컬 스토리지에서 메시지 불러오기
+        const loadMessages = () => {
+            const messages = localStorage.getItem('messages');
+            if (messages) {
+                const messageArray = JSON.parse(messages);
+                messageArray.forEach((message) => {
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add('chat-message');
+                    messageElement.innerHTML = `
+                        <div class="message-bubble">
+                            <span>${message}</span>
+                        </div>
+                    `;
+                    chatContainer.appendChild(messageElement);
+                });
+            }
+        };
+
+        // 메시지 보내기
+        const sendMessage = () => {
+            const message = messageInput.value.trim();
+            if (message) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('chat-message');
+                messageElement.innerHTML = `
+                    <div class="message-bubble">
+                        <span>${message}</span>
+                    </div>
+                `;
+                chatContainer.appendChild(messageElement);
+
+                // 로컬 스토리지에 메시지 저장
+                const messages = localStorage.getItem('messages');
+                if (messages) {
+                    const messageArray = JSON.parse(messages);
+                    messageArray.push(message);
+                    localStorage.setItem('messages', JSON.stringify(messageArray));
+                } else {
+                    localStorage.setItem('messages', JSON.stringify([message]));
+                }
+
+                messageInput.value = '';
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+        };
+
+        loadMessages();
+
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
